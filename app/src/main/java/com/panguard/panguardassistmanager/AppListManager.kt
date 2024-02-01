@@ -1,20 +1,34 @@
 package com.panguard.panguardassistmanager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 
 class AppListManager(private val context: Context) {
 
-    fun getInstalledApps(): Array<AppInfo> {
+    fun getInstalledApps(): List<AppInfo> {
         val packageManager: PackageManager = context.packageManager
 
-        // Get a list of all installed applications
-        val installedApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+        // Create an Intent with MAIN action and LAUNCHER category to query the launcher for the list of apps
+        val mainIntent = Intent(Intent.ACTION_MAIN, null)
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
-        // Convert ApplicationInfo objects to custom AppInfo objects
-        return installedApps.map { AppInfo(it.loadLabel(packageManager).toString(), it.packageName) }
-            .toTypedArray()
+        // Retrieve a list of ResolveInfo objects that match the intent
+        val resolveInfoList = packageManager.queryIntentActivities(mainIntent, 0)
+
+        // Create a list of AppInfo objects from the ResolveInfo list
+        return resolveInfoList.map { resolveInfo ->
+            val appName = resolveInfo.loadLabel(packageManager).toString()
+            val packageName = resolveInfo.activityInfo.packageName
+            val icon = resolveInfo.loadIcon(packageManager)
+            val iconUrl = "android.resource://${packageName}/${resolveInfo.activityInfo.icon}"
+            AppInfo(appName, packageName, icon, iconUrl)
+        }
     }
 
-    data class AppInfo(val appName: String, val packageName: String)
+    data class AppInfo(val appName: String, val packageName: String, val icon: Drawable, val iconUrl: String){
+
+
+    }
 }

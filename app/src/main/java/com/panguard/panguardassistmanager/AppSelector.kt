@@ -1,31 +1,79 @@
 package com.panguard.panguardassistmanager
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Text
+import android.graphics.drawable.Drawable
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.dp
-import android.content.Context
+import androidx.core.graphics.drawable.toBitmap
+
 class AppSelector {
 
     @Composable()
-    fun AppList(appList: AppListManager){
-        val apps = appList.getInstalledApps()
+    fun AppList(appList: AppListManager) {
+        val apps = appList.getInstalledApps().sortedBy { it.appName }
 
         Column(modifier = Modifier.fillMaxSize()) {
-            for( app in apps) {
-                Row(modifier = Modifier.fillMaxWidth().padding(8.dp)){
 
-                    Text(app.appName);
-                    Checkbox(checked = false, onCheckedChange = {})
+            Box{
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+
+                    items(apps) { appInfo ->
+                        AppListItem(appInfo)
+                    }
                 }
+//
+//                VerticalScrollbar(
+//                    modifier =Modifier. fillMaxHeight().align( Alignment.CenterEnd),
+//                    adapter = rememberScrollbarAdapter(rememberScrollState()),
+//                )
             }
         }
+    }
+
+    @Composable
+    fun AppListItem(appInfo: AppListManager.AppInfo) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+
+            AppIcon(appInfo.icon)
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(text = appInfo.appName)
+            Spacer(modifier = Modifier.width(16.dp))
+            Checkbox(
+                checked = false, // Set initial state as needed
+                onCheckedChange = { /* Handle checkbox state change */ }
+            )
+
+        }
+    }
+
+    @Composable
+    fun AppIcon(icon: Drawable) {
+        val bitmap =icon.toBitmap()
+
+        Image(
+            painter = remember { BitmapPainter(bitmap.asImageBitmap()) },
+            contentDescription = null,
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+        )
     }
 }
 
