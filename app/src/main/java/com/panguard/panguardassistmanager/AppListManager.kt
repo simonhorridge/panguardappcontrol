@@ -1,7 +1,6 @@
 package com.panguard.panguardassistmanager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 
@@ -14,8 +13,14 @@ class AppListManager(private val context: Context) {
         val mainIntent = Intent(Intent.ACTION_MAIN, null)
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
+
+
+
+
         // Retrieve a list of ResolveInfo objects that match the intent
         val resolveInfoList = packageManager.queryIntentActivities(mainIntent, 0)
+
+
 
         // Create a list of AppInfo objects from the ResolveInfo list
         return resolveInfoList.map { resolveInfo ->
