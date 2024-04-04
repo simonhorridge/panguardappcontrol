@@ -1,7 +1,11 @@
 package com.panguard.panguardassistmanager
 
+import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +21,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,16 +35,16 @@ import androidx.core.graphics.drawable.toBitmap
 
 class AppSelector {
 
-    @Composable()
-    fun AppList(appList: AppListManager, usageStats: Map<String, AggregatedUsageStats>) {
+    @Composable
+    fun AppList(
+        appList: AppListManager,
+        usageStats: Map<String, AggregatedUsageStats>,
+        context: Context
+    ) {
 
-
-
-
-
+        val vm = AppSelectorViewModel()
 
         val apps = appList.getInstalledApps().sortedBy { it.appName }
-
         Column(modifier = Modifier.fillMaxSize()) {
 
             Box {
@@ -47,14 +54,19 @@ class AppSelector {
                         .padding(16.dp)
                 ) {
 
-                    val stats = usageStats.values.toList();
+                    val stats = usageStats.values.toList()
 
                     items(stats) { appInfo ->
                         UsageStats(appInfo)
                     }
 
                     items(apps) { appInfo ->
-                        AppListItem(appInfo, usageStats[appInfo.appName])
+                        AppListItem(
+                            appInfo,
+                            usageStats[appInfo.packageName],
+                            vm,
+                            context = context
+                        )
                     }
                 }
 //
@@ -69,38 +81,67 @@ class AppSelector {
     }
 
     @Composable
-    fun AppListItem(appInfo: AppListManager.AppInfo, aggregatedUsageStats: AggregatedUsageStats?) {
+    fun AppListItem(
+        appInfo: AppInfo,
+        aggregatedUsageStats: AggregatedUsageStats?,
+        vm: AppSelectorViewModel,
+        context: Context
+    ) {
+
+        var isSelected by remember { mutableStateOf(vm.isSelected(appInfo)) }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
+                .clickable(
+                    onClick = {
+                        Log.d(
+                            "IsSelected",
+                            isSelected.toString()
+                                ?: "undefined"
+                        )
+
+                        isSelected = vm.toggleSelected(appInfo)
+                        Toast
+                            .makeText(
+                                context,
+                                "You just clicked a Clickable $isSelected",
+                                Toast.LENGTH_LONG
+                            )
+                            .show()
+
+                        Log.d(
+                            "IsSelected",
+                            "IsSelected $isSelected",
+                        )
+
+                    }),
         ) {
 
             AppIcon(appInfo.icon)
             Spacer(modifier = Modifier.width(16.dp))
-            //Text(text = appInfo.appName, modifier=Modifier.align(CenterVertically))
-            Text(text = appInfo.packageName, modifier=Modifier.align(CenterVertically))
-
-
+            Text(text = appInfo.appName, modifier = Modifier.align(CenterVertically))
 
             Spacer(Modifier.weight(1f))
+
             Checkbox(
-                modifier=Modifier.align(CenterVertically),
-                checked = false, // Set initial state as needed
-                onCheckedChange = { /* Handle checkbox state change */ }
+                modifier = Modifier.align(CenterVertically),
+                checked = isSelected,
+                onCheckedChange = {
+                    isSelected =   vm.toggleSelected(appInfo)
+                }
             )
         }
-        Row(){
+        Row {
             if (aggregatedUsageStats != null) {
-                UsageStats( aggregatedUsageStats)
+                UsageStats(aggregatedUsageStats)
             }
         }
-
     }
 
     @Composable
-    fun UsageStats(stat: AggregatedUsageStats){
-        Text(text = stat.packageName)
+    fun UsageStats(stat: AggregatedUsageStats) {
         Text(text = stat.totalTimeInForeground.toString())
     }
 
@@ -116,5 +157,5 @@ class AppSelector {
                 .clip(CircleShape),
         )
     }
-}
 
+}

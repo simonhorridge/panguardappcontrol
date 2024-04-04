@@ -9,7 +9,7 @@ class AppUsageStatisticsHelper {
      fun getAppUsageStats(context: Context): Map<String, AggregatedUsageStats> {
         val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val endTime = System.currentTimeMillis()
-        val startTime = endTime - (24 * 60 * 60 * 1000) // 24 hours ago
+        val startTime = endTime - (24 * 60 * 60 * 1000 * 7) // 7 Days ago
 
         val usageStatsList = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime)
 
@@ -26,9 +26,6 @@ class AppUsageStatisticsHelper {
 
         return aggregatedStats
     }
-
-
-
 }
 data class AggregatedUsageStats(
     val packageName: String,
