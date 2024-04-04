@@ -4,8 +4,6 @@ import android.app.usage.UsageStatsManager
 import android.content.Context
 
 class AppUsageStatisticsHelper {
-
-
      fun getAppUsageStats(context: Context): Map<String, AggregatedUsageStats> {
         val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val endTime = System.currentTimeMillis()

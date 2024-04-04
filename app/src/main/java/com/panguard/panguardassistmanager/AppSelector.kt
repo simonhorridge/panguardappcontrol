@@ -1,9 +1,6 @@
 package com.panguard.panguardassistmanager
-
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -64,19 +61,11 @@ class AppSelector {
                         AppListItem(
                             appInfo,
                             usageStats[appInfo.packageName],
-                            vm,
-                            context = context
+                            vm
                         )
                     }
                 }
-//
-//                VerticalScrollbar(
-//                    modifier =Modifier. fillMaxHeight().align( Alignment.CenterEnd),
-//                    adapter = rememberScrollbarAdapter(rememberScrollState()),
-//                )
             }
-
-
         }
     }
 
@@ -84,8 +73,7 @@ class AppSelector {
     fun AppListItem(
         appInfo: AppInfo,
         aggregatedUsageStats: AggregatedUsageStats?,
-        vm: AppSelectorViewModel,
-        context: Context
+        vm: AppSelectorViewModel
     ) {
 
         var isSelected by remember { mutableStateOf(vm.isSelected(appInfo)) }
@@ -96,26 +84,7 @@ class AppSelector {
                 .padding(16.dp)
                 .clickable(
                     onClick = {
-                        Log.d(
-                            "IsSelected",
-                            isSelected.toString()
-                                ?: "undefined"
-                        )
-
                         isSelected = vm.toggleSelected(appInfo)
-                        Toast
-                            .makeText(
-                                context,
-                                "You just clicked a Clickable $isSelected",
-                                Toast.LENGTH_LONG
-                            )
-                            .show()
-
-                        Log.d(
-                            "IsSelected",
-                            "IsSelected $isSelected",
-                        )
-
                     }),
         ) {
 
@@ -157,5 +126,4 @@ class AppSelector {
                 .clip(CircleShape),
         )
     }
-
 }
