@@ -11,9 +11,6 @@ data class AppSelectionUiState(
 class AppSelectorViewModel : ViewModel() {
     private val uiState = MutableStateFlow(AppSelectionUiState())
 
-//    val selectedApps: List<String>
-//        get() = uiState.value.selectedItems.filter { it.value }.map { it.key };
-
     fun isSelected(appInfo: AppInfo): Boolean {
         return uiState.value.selectedItems[appInfo.packageName] ?: false
     }
