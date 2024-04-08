@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                     val stats = AppUsageStatisticsHelper()
                     val  usageStats= stats.getAppUsageStats(this);
 
-                    AppSelector().AppList(appListManager, usageStats,this ) ;
+                    AppList(appListManager, usageStats,this ) ;
                 }
             }
         }
