@@ -36,10 +36,11 @@ class AppSelector {
     fun AppList(
         appList: AppListManager,
         usageStats: Map<String, AggregatedUsageStats>,
-        context: Context
-    ) {
+        context: Context,
 
-        val vm = AppSelectorViewModel()
+    ) {
+        val settingsRepository =  SettingsRepository(context)
+        val vm = AppSelectorViewModel(settingsRepository)
 
         val apps = appList.getInstalledApps().sortedBy { it.appName }
         Column(modifier = Modifier.fillMaxSize()) {
